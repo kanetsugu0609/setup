@@ -80,8 +80,24 @@ content = File.read(file_path)
 modified_content = content.gsub(search_text, replace_text)
 
 File.write(file_path, modified_content)
-# gadget.shを実行
-system('sudo sh /usr/share/pbm/shared/add_procon_gadget.sh')
+
+# gadget.shを実行するためのファイルをダウンロード
+require 'net/http'
+
+url = 'https://raw.githubusercontent.com/kanetsugu0609/gadget.sh/main/gadget.rb'
+save_path = File.expand_path('gadget.rb', '~/')
+
+uri = URI(url)
+response = Net::HTTP.get_response(uri)
+
+if response.code == '200'
+  File.open(save_path, 'wb') do |file|
+    file.write(response.body)
+  end
+  puts 'ファイルをダウンロードしました。'
+else
+  puts "ファイルのダウンロードに失敗しました。"
+end
 
 system('sudo systemctl link /usr/share/pbm/current/systemd_units/pbm.service')
 
